@@ -15,8 +15,9 @@ func main() {
 	pot := fw.NewTicklesPot()
 	// env
 	pot.Sow(&env.Seed{})
+	// config
 	// app
-	dir, err := os.Getwd()
+	dir, err := os.Getwd() // @@ to boot or config
 	if err != nil {
 		panic(err)
 	}

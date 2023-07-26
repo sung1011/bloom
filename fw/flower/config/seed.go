@@ -6,7 +6,6 @@ import (
 )
 
 type Seed struct {
-	fw.Pot
 }
 
 func (sd *Seed) Name() fw.SvcKey {
@@ -22,7 +21,7 @@ func (sd *Seed) Register(pot fw.Pot) fw.Bud {
 }
 
 func (sd *Seed) Params(pot fw.Pot) []interface{} {
-	appEnv := sd.Pot.Make(svc.Key_Env).(svc.Env).AppEnv()
+	appEnv := pot.Make(svc.Key_Env).(svc.Env).AppEnv()
 	return []interface{}{pot, appEnv}
 }
 

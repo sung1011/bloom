@@ -6,7 +6,6 @@ import (
 )
 
 type Seed struct {
-	fw.Pot
 	BaseFolder string
 }
 
