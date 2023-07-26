@@ -14,13 +14,13 @@ func (sd *Seed) Name() fw.SvcKey {
 	return svc.Key_UUID
 }
 
-func (sd *Seed) Boot(c fw.Pot) error {
+func (sd *Seed) Boot(pot fw.Pot) error {
 	sd.Mode = "gofrs" // @@todo get config
 	// s.Mode = "google" // @@todo get config
 	return nil
 }
 
-func (sd *Seed) Register(c fw.Pot) fw.Bud {
+func (sd *Seed) Register(pot fw.Pot) fw.Bud {
 	switch sd.Mode {
 	case "google":
 		return BudGoole
@@ -30,7 +30,7 @@ func (sd *Seed) Register(c fw.Pot) fw.Bud {
 	return nil
 }
 
-func (sd *Seed) Params(p fw.Pot) []interface{} {
+func (sd *Seed) Params(pot fw.Pot) []interface{} {
 	return []interface{}{}
 }
 

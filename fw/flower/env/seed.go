@@ -13,15 +13,15 @@ func (sd *Seed) Name() fw.SvcKey {
 	return svc.Key_Env
 }
 
-func (sd *Seed) Boot(c fw.Pot) error {
+func (sd *Seed) Boot(pot fw.Pot) error {
 	return nil
 }
 
-func (sd *Seed) Register(c fw.Pot) fw.Bud {
+func (sd *Seed) Register(pot fw.Pot) fw.Bud {
 	return Bud
 }
 
-func (sd *Seed) Params(c fw.Pot) []interface{} {
+func (sd *Seed) Params(pot fw.Pot) []interface{} {
 	return []interface{}{}
 }
 

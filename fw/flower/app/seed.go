@@ -14,16 +14,16 @@ func (sd *Seed) Name() fw.SvcKey {
 	return svc.Key_App
 }
 
-func (sd *Seed) Boot(c fw.Pot) error {
+func (sd *Seed) Boot(pot fw.Pot) error {
 	return nil
 }
 
-func (sd *Seed) Register(c fw.Pot) fw.Bud {
+func (sd *Seed) Register(pot fw.Pot) fw.Bud {
 	return Bud
 }
 
-func (sd *Seed) Params(c fw.Pot) []interface{} {
-	return []interface{}{c, sd.BaseFolder}
+func (sd *Seed) Params(pot fw.Pot) []interface{} {
+	return []interface{}{pot, sd.BaseFolder}
 }
 
 func (sd *Seed) IsDefer() bool {

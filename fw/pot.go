@@ -47,7 +47,7 @@ func (pot *TicklesPot) Sow(sd seed) error {
 	pot.seeds[key] = sd
 
 	if !sd.IsDefer() {
-		if ins, err := pot.newInstance(sd, nil); err == nil {
+		if ins, err := pot.newFlower(sd, nil); err == nil {
 			pot.flowers[key] = ins
 		}
 	}
@@ -90,7 +90,7 @@ func (pot *TicklesPot) getSeed(key SvcKey) seed {
 	return nil
 }
 
-func (pot *TicklesPot) getInstance(key SvcKey) interface{} {
+func (pot *TicklesPot) getFlower(key SvcKey) interface{} {
 	pot.lock.RLock()
 	defer pot.lock.RUnlock()
 	if ins, ok := pot.flowers[key]; ok {
@@ -99,22 +99,22 @@ func (pot *TicklesPot) getInstance(key SvcKey) interface{} {
 	return nil
 }
 
-func (pot *TicklesPot) newInstance(sd seed, params []interface{}) (interface{}, error) {
+func (pot *TicklesPot) newFlower(sd seed, params []interface{}) (interface{}, error) {
 	if err := sd.Boot(pot); err != nil {
 		return nil, err
 	}
 	if params == nil {
 		params = sd.Params(pot)
 	}
-	method := sd.Register(pot)
-	if method == nil {
+	bud := sd.Register(pot)
+	if bud == nil {
 		return nil, fmt.Errorf("seed not sow, svcKey: %s", sd.Name())
 	}
-	ins, err := method(params...)
+	flower, err := bud(params...)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
-	return ins, err
+	return flower, err
 }
 
 func (pot *TicklesPot) make(key SvcKey, forceNew bool, params []interface{}) (interface{}, error) {
@@ -123,17 +123,17 @@ func (pot *TicklesPot) make(key SvcKey, forceNew bool, params []interface{}) (in
 		return nil, fmt.Errorf("seed not sow, svcKey: %s", key)
 	}
 	if forceNew {
-		return pot.newInstance(sd, params)
+		return pot.newFlower(sd, params)
 	}
-	if ins := pot.getInstance(key); ins != nil {
+	if ins := pot.getFlower(key); ins != nil {
 		return ins, nil
 	}
-	inst, err := pot.newInstance(sd, nil)
+	flower, err := pot.newFlower(sd, nil)
 	if err != nil {
 		return nil, err
 	}
 	pot.lock.Lock()
 	defer pot.lock.Unlock()
-	pot.flowers[key] = inst
-	return inst, nil
+	pot.flowers[key] = flower
+	return flower, nil
 }
