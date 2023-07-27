@@ -17,17 +17,17 @@ func main() {
 	if err := pot.Sow(&env.Seed{}); err != nil {
 		panic(err)
 	}
-	if err := pot.Sow(&uuid.Seed{}); err != nil {
+	if err := pot.Sow(&uuid.Seed{Mode: "google"}); err != nil {
 		panic(err)
 	}
 	dir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	if err := pot.Sow(&app.Seed{BaseFolder: dir}); err != nil {
+	if err := pot.Sow(&app.Seed{BaseFolder: dir}); err != nil { // app on: uuid
 		panic(err)
 	}
-	if err := pot.Sow(&meta.Seed{}); err != nil {
+	if err := pot.Sow(&meta.Seed{}); err != nil { // meta on: app, env
 		panic(err)
 	}
 

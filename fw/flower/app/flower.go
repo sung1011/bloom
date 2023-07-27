@@ -8,6 +8,7 @@ import (
 )
 
 type Flower struct {
+	sd fw.Seed
 	svc.App
 
 	pot        fw.Pot // 服务容器
@@ -18,10 +19,12 @@ type Flower struct {
 func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	sd := seed.(*Seed)
 	pot := params[0].(fw.Pot)
+
 	return &Flower{
 		pot:        pot,
 		baseFolder: sd.BaseFolder,
 		appId:      sd.svcUUID.NewID(),
+		sd:         sd,
 	}, nil
 }
 

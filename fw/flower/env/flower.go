@@ -9,23 +9,26 @@ import (
 )
 
 type Flower struct {
+	sd fw.Seed
 	svc.Env
 
 	maps map[string]string
 }
 
 func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
-	svc := &Flower{
-		maps: map[string]string{},
-	}
+	maps := map[string]string{}
 	for _, e := range os.Environ() {
 		pair := strings.SplitN(e, "=", 2)
 		if len(pair) < 2 {
 			continue
 		}
-		svc.maps[pair[0]] = pair[1]
+		maps[pair[0]] = pair[1]
 	}
-	return svc, nil
+
+	return &Flower{
+		sd:   seed.(*Seed),
+		maps: maps,
+	}, nil
 }
 
 func (flw *Flower) AppEnv() string {

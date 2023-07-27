@@ -7,11 +7,14 @@ import (
 )
 
 type FlowerGofrs struct {
+	sd fw.Seed
 	svc.UUID
 }
 
 func BudGofrs(seed fw.Seed, params ...interface{}) (interface{}, error) {
-	return &FlowerGofrs{}, nil
+	return &FlowerGofrs{
+		sd: seed.(*Seed),
+	}, nil
 }
 
 func (s *FlowerGofrs) NewID() string {

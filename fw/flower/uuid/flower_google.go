@@ -7,11 +7,14 @@ import (
 )
 
 type FlowerGoogle struct {
+	sd fw.Seed
 	svc.UUID
 }
 
 func BudGoole(seed fw.Seed, params ...interface{}) (interface{}, error) {
-	return &FlowerGoogle{}, nil
+	return &FlowerGoogle{
+		sd: seed.(*Seed),
+	}, nil
 }
 
 func (s *FlowerGoogle) NewID() string {

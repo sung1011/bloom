@@ -11,8 +11,8 @@ import (
 )
 
 type Flower struct {
+	sd fw.Seed
 	svc.Meta
-	sd *Seed
 }
 
 func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
@@ -28,6 +28,7 @@ func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &Flower{sd: sd}, nil
 }
 
