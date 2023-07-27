@@ -1,16 +1,19 @@
-package uuid
+package server
 
 import (
+	"github.com/gohade/hade/framework/gin"
 	"github.com/sung1011/bloom/fw"
 	"github.com/sung1011/bloom/fw/svc"
 )
 
 type Seed struct {
 	Mode string
+
+	ginEngine *gin.Engine
 }
 
 func (sd *Seed) Name() fw.SvcKey {
-	return svc.Key_UUID
+	return svc.Key_Server
 }
 
 func (sd *Seed) Boot(pot fw.Pot) error {
@@ -19,10 +22,8 @@ func (sd *Seed) Boot(pot fw.Pot) error {
 
 func (sd *Seed) Register(pot fw.Pot) fw.Bud {
 	switch sd.Mode {
-	case "google":
-		return BudGoole
-	case "gofrs":
-		return BudGofrs
+	case "gin":
+		return BudGin
 	}
 	return nil
 }

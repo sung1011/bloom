@@ -31,8 +31,10 @@ func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 
 	return &Flower{sd: sd}, nil
 }
+func (flw *Flower) Get(key string) interface{} {
+	return viper.Get(key)
+}
 
-func (flw *Flower) Load(key string, val interface{}) error {
-	// @@todo
-	return nil
+func (flw *Flower) Load(val interface{}) error {
+	return viper.Unmarshal(val)
 }

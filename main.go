@@ -8,6 +8,7 @@ import (
 	"github.com/sung1011/bloom/fw/flower/app"
 	"github.com/sung1011/bloom/fw/flower/env"
 	"github.com/sung1011/bloom/fw/flower/meta"
+	"github.com/sung1011/bloom/fw/flower/server"
 	"github.com/sung1011/bloom/fw/flower/uuid"
 	"github.com/sung1011/bloom/fw/svc"
 )
@@ -30,16 +31,21 @@ func main() {
 	if err := pot.Sow(&meta.Seed{}); err != nil { // meta on: app, env
 		panic(err)
 	}
-
-	o, err := pot.New(svc.Key_UUID, []interface{}{})
-	if err != nil {
+	if err := pot.Sow(&server.Seed{Mode: "gin"}); err != nil {
 		panic(err)
 	}
 
+	// @@ config, deploy, log, mongo, redis, server(kernel)
+
 	fmt.Println("-------------------------------------")
-	s := pot.Make(svc.Key_UUID).(svc.UUID)
-	fmt.Println("", s, s.NewID())
-	fmt.Println("", o, o.(svc.UUID).NewID())
-	fmt.Println("", pot.Make(svc.Key_App).(svc.App).BaseFolder())
-	fmt.Println("", pot.Make(svc.Key_App).(svc.App).MetaFolder())
+	fmt.Println("app", pot.Make(svc.Key_App).(svc.App).MetaFolder())
+
+	yaml := struct {
+		Env string
+	}{}
+	pot.Make(svc.Key_Meta).(svc.Meta).Load(&yaml)
+	fmt.Println("meta", yaml.Env)
+
+	fmt.Println("", pot.Make(svc.Key_Server).(svc.Server).HttpHandler())
+	// viper.GetViper().Debug()
 }
