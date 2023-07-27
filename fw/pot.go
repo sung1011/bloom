@@ -1,6 +1,7 @@
 package fw
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"sync"
@@ -10,7 +11,8 @@ type SvcKey string
 
 type Pot interface {
 	// Sow 绑定一个服务提供者，如果关键字凭证已经存在，会进行替换操作，返回error
-	Sow(seed) error
+	// 无锁, 启动服务时候调用
+	Sow(Seed) error
 	// IsSow 关键字凭证是否已经绑定服务提供者
 	IsSow(SvcKey) bool
 	// Make 根据svcKey从seeds中获取一个服务, 单例模式的; 没有会报错
@@ -22,7 +24,7 @@ type Pot interface {
 type TicklesPot struct {
 	Pot
 	// seeds 存储注册的服务提供者
-	seeds map[SvcKey]seed
+	seeds map[SvcKey]Seed
 	// flowers 存储具体的实例
 	flowers map[SvcKey]interface{}
 	// lock 用于锁住对容器的变更操作
@@ -31,34 +33,32 @@ type TicklesPot struct {
 
 func NewTicklesPot() *TicklesPot {
 	return &TicklesPot{
-		seeds:   make(map[SvcKey]seed),
+		seeds:   make(map[SvcKey]Seed),
 		flowers: make(map[SvcKey]interface{}),
 	}
 }
 
-func (pot *TicklesPot) Sow(sd seed) error {
-	pot.lock.Lock()
-	defer pot.lock.Unlock()
-
-	key := sd.Name()
-	if pot.seeds[key] != nil {
-		return fmt.Errorf("seed already sow, svcKey: %s", key)
+func (pot *TicklesPot) Sow(sd Seed) error {
+	if err := pot.setSeed(sd); err != nil {
+		return err
 	}
-	pot.seeds[key] = sd
-
 	if !sd.IsDefer() {
-		if ins, err := pot.newFlower(sd, nil); err == nil {
-			pot.flowers[key] = ins
+		if _, err := pot.getFlower(sd); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
 func (pot *TicklesPot) IsSow(key SvcKey) bool {
+	pot.lock.Lock()
+	defer pot.lock.Unlock()
 	return pot.getSeed(key) != nil
 }
 
 func (pot *TicklesPot) Make(key SvcKey) interface{} {
+	pot.lock.Lock()
+	defer pot.lock.Unlock()
 	serv, err := pot.make(key, false, nil)
 	if err != nil {
 		panic(err)
@@ -67,39 +67,61 @@ func (pot *TicklesPot) Make(key SvcKey) interface{} {
 }
 
 func (pot *TicklesPot) New(key SvcKey, params []interface{}) (interface{}, error) {
+	pot.lock.Lock()
+	defer pot.lock.Unlock()
 	return pot.make(key, true, params)
 }
 
-func (pot *TicklesPot) Keys() []SvcKey {
-	pot.lock.RLock()
-	defer pot.lock.RUnlock()
-
-	keys := make([]SvcKey, 0, len(pot.seeds))
-	for k := range pot.seeds {
-		keys = append(keys, k)
+func (pot *TicklesPot) Pretty() {
+	pretty := func(v interface{}) string {
+		if v == nil {
+			return "<nil>"
+		}
+		return fmt.Sprintf("%#v", v)
 	}
-	return keys
+	var buf bytes.Buffer
+	buf.WriteString("seeds:\n")
+	for k, v := range pot.seeds {
+		buf.WriteString(fmt.Sprintf("  %s: %s\n", k, pretty(v)))
+	}
+	buf.WriteString("flowers:\n")
+	for k, v := range pot.flowers {
+		buf.WriteString(fmt.Sprintf("  %s: %s\n", k, pretty(v)))
+	}
+	fmt.Printf("%v", buf.String())
 }
 
-func (pot *TicklesPot) getSeed(key SvcKey) seed {
-	pot.lock.RLock()
-	defer pot.lock.RUnlock()
+func (pot *TicklesPot) getSeed(key SvcKey) Seed {
 	if sd, ok := pot.seeds[key]; ok {
 		return sd
 	}
 	return nil
 }
 
-func (pot *TicklesPot) getFlower(key SvcKey) interface{} {
-	pot.lock.RLock()
-	defer pot.lock.RUnlock()
-	if ins, ok := pot.flowers[key]; ok {
-		return ins
+func (pot *TicklesPot) setSeed(sd Seed) error {
+	key := sd.Name()
+	if pot.seeds[key] != nil {
+		return fmt.Errorf("seed already sow, svcKey: %s", key)
 	}
+	pot.seeds[key] = sd
 	return nil
 }
 
-func (pot *TicklesPot) newFlower(sd seed, params []interface{}) (interface{}, error) {
+func (pot *TicklesPot) getFlower(sd Seed) (interface{}, error) {
+	key := sd.Name()
+	if flower, ok := pot.flowers[key]; ok {
+		return flower, nil
+	}
+	flower, err := pot.newFlower(sd, nil)
+	if err != nil {
+		return nil, err
+	}
+	pot.flowers[key] = flower
+
+	return flower, nil
+}
+
+func (pot *TicklesPot) newFlower(sd Seed, params []interface{}) (interface{}, error) {
 	if err := sd.Boot(pot); err != nil {
 		return nil, err
 	}
@@ -110,7 +132,7 @@ func (pot *TicklesPot) newFlower(sd seed, params []interface{}) (interface{}, er
 	if bud == nil {
 		return nil, fmt.Errorf("seed not sow, svcKey: %s", sd.Name())
 	}
-	flower, err := bud(params...)
+	flower, err := bud(sd, params...)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
@@ -125,15 +147,5 @@ func (pot *TicklesPot) make(key SvcKey, forceNew bool, params []interface{}) (in
 	if forceNew {
 		return pot.newFlower(sd, params)
 	}
-	if ins := pot.getFlower(key); ins != nil {
-		return ins, nil
-	}
-	flower, err := pot.newFlower(sd, nil)
-	if err != nil {
-		return nil, err
-	}
-	pot.lock.Lock()
-	defer pot.lock.Unlock()
-	pot.flowers[key] = flower
-	return flower, nil
+	return pot.getFlower(sd)
 }

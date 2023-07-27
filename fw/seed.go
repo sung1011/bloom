@@ -1,9 +1,10 @@
 package fw
 
-type Bud func(...interface{}) (interface{}, error)
+type Bud func(Seed, ...interface{}) (interface{}, error)
 
-type seed interface {
-	// Boot 在调用实例化服务的时候会调用，可以把一些准备工作: 基础配置, 初始化参数, 检查依赖服务等放在这里
+// Seed 代表了一个服务提供者的接口, 其字段为基础属性, 可传入 或 由boot()将依赖的flower填充进来
+type Seed interface {
+	// Boot 在调用实例化服务的时候会调用，可以把一些准备工作: 处理依赖关系, 填充seed默认的字段等
 	Boot(Pot) error
 	// Register 在服务容器中注册了一个实例化服务的方法; 是否在注册的时候就实例化这个服务, 需要参考IsDefer接口
 	Register(Pot) Bud

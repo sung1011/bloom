@@ -2,14 +2,15 @@ package uuid
 
 import (
 	"github.com/google/uuid"
-	"github.com/sung1011/stickypack/fw/svc"
+	"github.com/sung1011/bloom/fw"
+	"github.com/sung1011/bloom/fw/svc"
 )
 
 type FlowerGoogle struct {
 	svc.UUID
 }
 
-func BudGoole(...interface{}) (interface{}, error) {
+func BudGoole(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	return &FlowerGoogle{}, nil
 }
 

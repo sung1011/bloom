@@ -10,8 +10,8 @@ type App interface {
 
 	// BaseFolder 定义项目基础地址
 	BaseFolder() string
-	// ConfigFolder 定义了配置文件的路径
-	ConfigFolder() string
+	// MetaFolder 定义了配置文件的路径
+	MetaFolder() string
 	// LogFolder 定义了日志所在路径
 	LogFolder() string
 	// ServiceFolder 定义业务自己的服务提供者地址

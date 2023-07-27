@@ -4,15 +4,17 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sung1011/stickypack/fw/svc"
+	"github.com/sung1011/bloom/fw"
+	"github.com/sung1011/bloom/fw/svc"
 )
 
 type Flower struct {
 	svc.Env
+
 	maps map[string]string
 }
 
-func Bud(...interface{}) (interface{}, error) {
+func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	svc := &Flower{
 		maps: map[string]string{},
 	}

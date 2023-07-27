@@ -1,8 +1,8 @@
 package env
 
 import (
-	"github.com/sung1011/stickypack/fw"
-	"github.com/sung1011/stickypack/fw/svc"
+	"github.com/sung1011/bloom/fw"
+	"github.com/sung1011/bloom/fw/svc"
 )
 
 type Seed struct {

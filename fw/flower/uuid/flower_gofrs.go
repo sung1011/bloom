@@ -2,14 +2,15 @@ package uuid
 
 import (
 	"github.com/gofrs/uuid"
-	"github.com/sung1011/stickypack/fw/svc"
+	"github.com/sung1011/bloom/fw"
+	"github.com/sung1011/bloom/fw/svc"
 )
 
 type FlowerGofrs struct {
 	svc.UUID
 }
 
-func BudGofrs(...interface{}) (interface{}, error) {
+func BudGofrs(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	return &FlowerGofrs{}, nil
 }
 
