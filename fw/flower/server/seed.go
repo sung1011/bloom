@@ -1,15 +1,14 @@
 package server
 
 import (
-	"github.com/gohade/hade/framework/gin"
+	"net/http"
+
 	"github.com/sung1011/bloom/fw"
 	"github.com/sung1011/bloom/fw/svc"
 )
 
 type Seed struct {
-	Mode string
-
-	ginEngine *gin.Engine
+	HttpHandler http.Handler
 }
 
 func (sd *Seed) Name() fw.SvcKey {
@@ -21,11 +20,7 @@ func (sd *Seed) Boot(pot fw.Pot) error {
 }
 
 func (sd *Seed) Register(pot fw.Pot) fw.Bud {
-	switch sd.Mode {
-	case "gin":
-		return BudGin
-	}
-	return nil
+	return BudGin
 }
 
 func (sd *Seed) Params(pot fw.Pot) []interface{} {

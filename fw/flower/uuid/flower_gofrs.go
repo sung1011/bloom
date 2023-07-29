@@ -17,7 +17,7 @@ func BudGofrs(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	}, nil
 }
 
-func (s *FlowerGofrs) NewID() string {
+func (flw *FlowerGofrs) NewID() string {
 	v, _ := uuid.NewV6()
 	return v.String()
 }

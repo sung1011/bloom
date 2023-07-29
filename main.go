@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sung1011/bloom/app/http"
 	"github.com/sung1011/bloom/fw"
 	"github.com/sung1011/bloom/fw/flower/app"
 	"github.com/sung1011/bloom/fw/flower/env"
@@ -31,7 +32,12 @@ func main() {
 	if err := pot.Sow(&meta.Seed{}); err != nil { // meta on: app, env
 		panic(err)
 	}
-	if err := pot.Sow(&server.Seed{Mode: "gin"}); err != nil {
+	// server
+	httpHandler, err := http.NewHttpEngine(pot)
+	if err != nil {
+		panic(err)
+	}
+	if err := pot.Sow(&server.Seed{HttpHandler: httpHandler}); err != nil {
 		panic(err)
 	}
 

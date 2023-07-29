@@ -17,6 +17,6 @@ func BudGoole(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	}, nil
 }
 
-func (s *FlowerGoogle) NewID() string {
+func (flw *FlowerGoogle) NewID() string {
 	return uuid.New().String()
 }
