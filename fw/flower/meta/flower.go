@@ -2,7 +2,7 @@ package meta
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"path"
 
 	"github.com/spf13/viper"
@@ -19,7 +19,7 @@ func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	sd := seed.(*Seed)
 
 	confFile := path.Join(sd.svcApp.MetaFolder(), sd.svcEnv.AppEnv()+".yaml")
-	data, err := ioutil.ReadFile(confFile)
+	data, err := os.ReadFile(confFile)
 	if err != nil {
 		return nil, err
 	}
@@ -28,13 +28,12 @@ func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &Flower{sd: sd}, nil
 }
 func (flw *Flower) Get(key string) interface{} {
 	return viper.Get(key)
 }
 
-func (flw *Flower) Load(val interface{}) error {
-	return viper.Unmarshal(val)
+func (flw *Flower) Load(key string, val interface{}) error {
+	return viper.UnmarshalKey(key, val)
 }

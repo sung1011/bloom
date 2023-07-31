@@ -1,1 +1,27 @@
-env: dev
+env: dev # dev, prod
+app:
+  log:
+    level: "info"
+    format: "console" # json, console
+    output:
+      - "stderr"
+    errOutput:
+      - "stderr" # @@ 没起作用
+  storage:
+    mongodb:
+      - name: "default"
+        uri: "mongodb://localhost:27017"
+        db: "dev1"
+    redis: # redis单例
+      - name: "default"
+        uri: "redis://localhost:6379"
+        db: 0
+        isCluster: false # 底层是否是集群
+    sharedRedis: # redis分片
+      - name: "player"
+        urls:
+          - "redis://127.0.0.1:6379"
+          - "redis://127.0.0.1:6379"
+        dbs:
+          - 1
+          - 2

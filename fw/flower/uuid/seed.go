@@ -6,7 +6,7 @@ import (
 )
 
 type Seed struct {
-	Mode string
+	Driver string
 }
 
 func (sd *Seed) Name() fw.SvcKey {
@@ -18,7 +18,7 @@ func (sd *Seed) Boot(pot fw.Pot) error {
 }
 
 func (sd *Seed) Register(pot fw.Pot) fw.Bud {
-	switch sd.Mode {
+	switch sd.Driver {
 	case "google":
 		return BudGoole
 	case "gofrs":

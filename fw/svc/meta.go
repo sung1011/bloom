@@ -4,5 +4,5 @@ const Key_Meta = "tk:meta"
 
 type Meta interface {
 	Get(key string) interface{}
-	Load(val interface{}) error
+	Load(key string, val interface{}) error
 }
