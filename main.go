@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -45,12 +46,12 @@ func main() {
 		panic(err)
 	}
 
-	// @@ config, deploy, log(zap), mongo, redis, server(kernel)
+	// @@ config, deploy, mw, mongo, redis, server(kernel)
 	fmt.Println("-------------------------------------")
 
 	// tmpMeta(pot)
 
-	tmpZap(pot)
+	// tmpZap(pot)
 }
 
 func tmpMeta(pot fw.Pot) {
@@ -63,6 +64,11 @@ func tmpMeta(pot fw.Pot) {
 }
 
 func tmpZap(pot fw.Pot) {
+	ctx := context.Background()
+	m := map[string]interface{}{
+		"a": "b",
+	}
+	pot.Make(svc.Key_Log).(svc.Log).Info(ctx, "lala", m)
 	// zap yaml
 	// 	rawJSON := []byte(`{
 	//     "level":"error",
