@@ -11,8 +11,9 @@ import (
 )
 
 type Flower struct {
-	sd fw.Seed
-	svc.Meta
+	svc.Meta // implements
+	sd       fw.Seed
+	d        *svc.Data
 }
 
 func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
@@ -24,16 +25,27 @@ func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 		return nil, err
 	}
 	viper.SetConfigType("yaml")
-	err = viper.ReadConfig(bytes.NewBuffer(data))
-	if err != nil {
+	if err = viper.ReadConfig(bytes.NewBuffer(data)); err != nil {
 		return nil, err
 	}
-	return &Flower{sd: sd}, nil
-}
-func (flw *Flower) Get(key string) interface{} {
-	return viper.Get(key)
+	d := &svc.Data{}
+	if err = viper.Unmarshal(d); err != nil {
+		return nil, err
+	}
+	return &Flower{
+		sd: sd,
+		d:  d,
+	}, nil
 }
 
-func (flw *Flower) Load(key string, val interface{}) error {
-	return viper.UnmarshalKey(key, val)
+func (flw *Flower) Get() *svc.Data {
+	return flw.d
 }
+
+// func (flw *Flower) Get(key string) interface{} {
+// 	return viper.Get(key)
+// }
+
+// func (flw *Flower) Load(key string, val interface{}) error {
+// 	return viper.UnmarshalKey(key, val)
+// }

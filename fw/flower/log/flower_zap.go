@@ -4,19 +4,14 @@ import (
 	"context"
 
 	"github.com/sung1011/bloom/fw"
+	"github.com/sung1011/bloom/fw/svc"
 	"go.uber.org/zap"
 )
 
 type FlowerZap struct {
+	svc.Log    // implements
 	sd         fw.Seed
 	rootLogger *zap.SugaredLogger
-}
-
-type Config struct {
-	Level     string
-	Format    string
-	Output    []string
-	ErrOutput []string
 }
 
 func BudZap(seed fw.Seed, params ...interface{}) (interface{}, error) {
@@ -24,17 +19,11 @@ func BudZap(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	var err error
 	cfg := zap.NewDevelopmentConfig()
 
-	conf := &Config{}
-	if err := sd.svcMeta.Load("app.log", conf); err != nil {
-		return nil, err
-	}
-	if cfg.Level, err = zap.ParseAtomicLevel(conf.Level); err != nil {
-		return nil, err
-	}
-	cfg.Development = sd.svcMeta.Get("env") == "dev"
-	cfg.Encoding = conf.Format
-	cfg.OutputPaths = conf.Output
-	cfg.ErrorOutputPaths = conf.ErrOutput
+	meta := sd.svcMeta.Get()
+	cfg.Development = meta.Env == "dev"
+	cfg.Encoding = meta.App.Log.Format
+	cfg.OutputPaths = meta.App.Log.Output
+	cfg.ErrorOutputPaths = meta.App.Log.ErrOutput
 
 	logger, err := cfg.Build()
 	if err != nil {

@@ -7,8 +7,8 @@ import (
 )
 
 type FlowerGofrs struct {
-	sd fw.Seed
-	svc.UUID
+	svc.UUID // implements
+	sd       fw.Seed
 }
 
 func BudGofrs(seed fw.Seed, params ...interface{}) (interface{}, error) {

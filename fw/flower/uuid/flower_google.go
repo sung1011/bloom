@@ -7,8 +7,8 @@ import (
 )
 
 type FlowerGoogle struct {
-	sd fw.Seed
-	svc.UUID
+	svc.UUID // implements
+	sd       fw.Seed
 }
 
 func BudGoole(seed fw.Seed, params ...interface{}) (interface{}, error) {

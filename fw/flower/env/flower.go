@@ -9,8 +9,8 @@ import (
 )
 
 type Flower struct {
-	sd fw.Seed
-	svc.Env
+	svc.Env // implements
+	sd      fw.Seed
 
 	maps map[string]string
 }

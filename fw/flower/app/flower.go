@@ -8,8 +8,8 @@ import (
 )
 
 type Flower struct {
-	sd fw.Seed
-	svc.App
+	svc.App // implements
+	sd      fw.Seed
 
 	pot        fw.Pot // 服务容器
 	baseFolder string // 基础路径

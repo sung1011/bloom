@@ -51,16 +51,16 @@ func main() {
 
 	// tmpMeta(pot)
 
-	// tmpZap(pot)
+	tmpZap(pot)
 }
 
 func tmpMeta(pot fw.Pot) {
-	yaml := struct {
-		Env string
-	}{}
-	pot.Make(svc.Key_Meta).(svc.Meta).Load("app", &yaml)
-	fmt.Println("meta", yaml.Env)
-	fmt.Println("app", pot.Make(svc.Key_App).(svc.App).MetaFolder())
+	// yaml := struct {
+	// 	Env string
+	// }{}
+	// pot.Make(svc.Key_Meta).(svc.Meta).Load("app", &yaml)
+	// fmt.Println("meta", yaml.Env)
+	// fmt.Println("app", pot.Make(svc.Key_App).(svc.App).MetaFolder())
 }
 
 func tmpZap(pot fw.Pot) {
