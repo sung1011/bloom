@@ -50,9 +50,9 @@ func main() {
 		panic(err)
 	}
 
-	// @@ config, deploy, mw, mongo, redis, server(kernel)
+	// @@ config, deploy, mw, mongo, server(kernel)
 	fmt.Println("-------------------------------------")
-	// tmpMeta(pot)
+	tmpMeta(pot)
 	// tmpZap(pot)
 	tmpRedis(pot)
 }
@@ -68,12 +68,8 @@ func tmpRedis(pot fw.Pot) {
 }
 
 func tmpMeta(pot fw.Pot) {
-	// yaml := struct {
-	// 	Env string
-	// }{}
-	// pot.Make(svc.Key_Meta).(svc.Meta).Load("app", &yaml)
-	// fmt.Println("meta", yaml.Env)
-	// fmt.Println("app", pot.Make(svc.Key_App).(svc.App).MetaFolder())
+	meta := pot.Make(svc.Key_Meta).(svc.Meta).Get()
+	fmt.Println("env", meta.Env)
 }
 
 func tmpZap(pot fw.Pot) {
