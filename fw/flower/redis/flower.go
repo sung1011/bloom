@@ -1,4 +1,4 @@
-package meta
+package redis
 
 import (
 	"errors"
@@ -24,15 +24,34 @@ func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		cMap[rds.Name] = redis.NewClient(&redis.Options{
-			Addr:     opt.Addr,
-			Password: opt.Password,
-			DB:       rds.DB,
-			// @@
-		})
+		if nil != cMap[rds.Name] {
+			return nil, errors.New("duplicate redis name " + rds.Name)
+		}
+		opt.DB = rds.DB
+		cMap[rds.Name] = redis.NewClient(opt)
 	}
 	// cs
-	return &Flower{sd: sd}, nil
+	csMap := map[string][]*redis.Client{}
+	for _, rds := range sd.svcMeta.Get().App.Storage.SharedRedis {
+		if nil != csMap[rds.Name] {
+			return nil, errors.New("duplicate redis shared name " + rds.Name)
+		}
+		for k, url := range rds.URLs {
+			opt, err := redis.ParseURL(url)
+			if err != nil {
+				return nil, err
+			}
+			opt.DB = rds.DBs[k]
+			// csMap[rds.Name] = []*redis.Client{}
+			csMap[rds.Name] = append(csMap[rds.Name], redis.NewClient(opt))
+		}
+	}
+
+	return &Flower{
+		sd:    sd,
+		cMap:  cMap,
+		csMap: csMap,
+	}, nil
 }
 
 func (flw *Flower) GetClient(key string) (*redis.Client, error) {

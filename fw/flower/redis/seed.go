@@ -1,4 +1,4 @@
-package meta
+package redis
 
 import (
 	"github.com/sung1011/bloom/fw"

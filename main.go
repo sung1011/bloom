@@ -11,6 +11,7 @@ import (
 	"github.com/sung1011/bloom/fw/flower/env"
 	"github.com/sung1011/bloom/fw/flower/log"
 	"github.com/sung1011/bloom/fw/flower/meta"
+	"github.com/sung1011/bloom/fw/flower/redis"
 	"github.com/sung1011/bloom/fw/flower/server"
 	"github.com/sung1011/bloom/fw/flower/uuid"
 	"github.com/sung1011/bloom/fw/svc"
@@ -45,13 +46,25 @@ func main() {
 	if err := pot.Sow(&log.Seed{}); err != nil {
 		panic(err)
 	}
+	if err := pot.Sow(&redis.Seed{}); err != nil {
+		panic(err)
+	}
 
 	// @@ config, deploy, mw, mongo, redis, server(kernel)
 	fmt.Println("-------------------------------------")
-
 	// tmpMeta(pot)
+	// tmpZap(pot)
+	tmpRedis(pot)
+}
 
-	tmpZap(pot)
+func tmpRedis(pot fw.Pot) {
+	redis := pot.Make(svc.Key_Redis).(svc.Redis)
+	c, err := redis.GetClient("default")
+	if err != nil {
+		panic(err)
+	}
+	ctx := context.Background()
+	fmt.Println(c.Ping(ctx).Result())
 }
 
 func tmpMeta(pot fw.Pot) {
