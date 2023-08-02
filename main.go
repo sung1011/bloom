@@ -55,13 +55,13 @@ func main() {
 	// @@ config, deploy, mw, mongo, server(kernel)
 	fmt.Println("-------------------------------------")
 
-	tmpMeta(pot)
-	tmpZap(pot)
-	tmpRedis(pot)
+	test_Meta(pot)
+	test_Zap(pot)
+	test_Redis(pot)
 
 }
 
-func tmpRedis(pot fw.Pot) {
+func test_Redis(pot fw.Pot) {
 	redis := pot.Make(svc.Key_Redis).(svc.Redis)
 	c, err := redis.GetClient("default")
 	if err != nil {
@@ -71,12 +71,12 @@ func tmpRedis(pot fw.Pot) {
 	fmt.Println(c.Ping(ctx).Result())
 }
 
-func tmpMeta(pot fw.Pot) {
+func test_Meta(pot fw.Pot) {
 	meta := pot.Make(svc.Key_Meta).(svc.Meta).Get()
 	fmt.Println("env", meta.Env)
 }
 
-func tmpZap(pot fw.Pot) {
+func test_Zap(pot fw.Pot) {
 	ctx := context.Background()
 	m := map[string]interface{}{
 		"a": "b",
@@ -84,8 +84,8 @@ func tmpZap(pot fw.Pot) {
 	logger := pot.Make(svc.Key_Log).(svc.Log)
 
 	logger.Info(ctx, "lala", m)
-	logger.Error(ctx, "eee", m)
-	// logger.Fatal(ctx, "fff", m)
+	logger.Fatal(ctx, "fff", m)
+	// logger.Error(ctx, "eee", m)
 	// logger.Panic(ctx, "ppp", m)
 	// zap yaml
 	// 	rawJSON := []byte(`{
@@ -109,51 +109,4 @@ func tmpZap(pot fw.Pot) {
 	// 		panic(err)
 	// 	}
 	// 	defer logger.Sync()
-
-	// 	logger.Info("server start work successfully!")
-
-	// 	logger.Info("lala")
-
-	// zap config
-	// cfg := zap.Config{
-	// 	Level:             zap.AtomicLevel{},
-	// 	Development:       false,
-	// 	DisableCaller:     false,
-	// 	DisableStacktrace: false,
-	// 	Sampling: &zap.SamplingConfig{
-	// 		Initial:    0,
-	// 		Thereafter: 0,
-	// 		Hook:       func(zapcore.Entry, zapcore.SamplingDecision) { panic("not implemented") },
-	// 	},
-	// 	Encoding: "",
-	// 	EncoderConfig: zapcore.EncoderConfig{
-	// 		MessageKey:          "",
-	// 		LevelKey:            "",
-	// 		TimeKey:             "",
-	// 		NameKey:             "",
-	// 		CallerKey:           "",
-	// 		FunctionKey:         "",
-	// 		StacktraceKey:       "",
-	// 		SkipLineEnding:      false,
-	// 		LineEnding:          "",
-	// 		EncodeLevel:         func(zapcore.Level, zapcore.PrimitiveArrayEncoder) { panic("not implemented") },
-	// 		EncodeTime:          func(time.Time, zapcore.PrimitiveArrayEncoder) { panic("not implemented") },
-	// 		EncodeDuration:      func(time.Duration, zapcore.PrimitiveArrayEncoder) { panic("not implemented") },
-	// 		EncodeCaller:        func(zapcore.EntryCaller, zapcore.PrimitiveArrayEncoder) { panic("not implemented") },
-	// 		EncodeName:          func(string, zapcore.PrimitiveArrayEncoder) { panic("not implemented") },
-	// 		NewReflectedEncoder: func(io.Writer) zapcore.ReflectedEncoder { panic("not implemented") },
-	// 		ConsoleSeparator:    "",
-	// 	},
-	// 	OutputPaths:      []string{},
-	// 	ErrorOutputPaths: []string{},
-	// 	InitialFields: map[string]interface{}{
-	// 		"": nil,
-	// 	},
-	// }
-	// logger, err := cfg.Build()
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// logger.Info("halo")
-
 }

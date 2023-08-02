@@ -8,10 +8,10 @@ const Key_Log = "tk:log"
 
 // Log 定义了日志服务协议
 type Log interface {
-	// Panic 表示会导致整个程序出现崩溃的日志信息
-	Panic(ctx context.Context, msg string, fields map[string]interface{})
 	// Fatal 表示会导致当前这个请求出现提前终止的错误信息
 	Fatal(ctx context.Context, msg string, fields map[string]interface{})
+	// Panic 表示会导致整个程序出现崩溃的日志信息
+	Panic(ctx context.Context, msg string, fields map[string]interface{})
 	// Error 表示出现错误，但是不一定影响后续请求逻辑的错误信息
 	Error(ctx context.Context, msg string, fields map[string]interface{})
 	// Warn 表示出现错误，但是一定不影响后续请求逻辑的报警信息

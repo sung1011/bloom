@@ -66,15 +66,6 @@ func BudZap(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	}, nil
 }
 
-// Panic 表示会导致整个程序出现崩溃的日志信息
-func (flw *FlowerZap) Panic(ctx context.Context, msg string, fields map[string]interface{}) {
-	var kvs []interface{}
-	for k, v := range fields {
-		kvs = append(kvs, k, v)
-	}
-	flw.rootLogger.Panicw(msg, kvs...)
-}
-
 // Fatal 表示会导致当前这个请求出现提前终止的错误信息
 func (flw *FlowerZap) Fatal(ctx context.Context, msg string, fields map[string]interface{}) {
 	var kvs []interface{}
@@ -82,6 +73,15 @@ func (flw *FlowerZap) Fatal(ctx context.Context, msg string, fields map[string]i
 		kvs = append(kvs, k, v)
 	}
 	flw.rootLogger.Fatalw(msg, kvs...)
+}
+
+// Panic 表示会导致整个程序出现崩溃的日志信息
+func (flw *FlowerZap) Panic(ctx context.Context, msg string, fields map[string]interface{}) {
+	var kvs []interface{}
+	for k, v := range fields {
+		kvs = append(kvs, k, v)
+	}
+	flw.rootLogger.Panicw(msg, kvs...)
 }
 
 // Error 表示出现错误，但是不一定影响后续请求逻辑的错误信息
