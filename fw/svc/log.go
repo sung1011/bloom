@@ -23,6 +23,7 @@ type Log interface {
 	// // Trace 表示最详细的信息，一般信息量比较大，可能包含调用堆栈等信息
 	// Trace(ctx context.Context, msg string, fields map[string]interface{})
 
+	Sync() error
 	// SetLevel 设置日志级别
 	// SetLevel(level LogLevel)
 	// // SetCtxFielder 从context中获取上下文字段field

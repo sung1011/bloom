@@ -1,12 +1,8 @@
 env: dev # dev, prod
 app:
   log:
-    level: "info"
+    level: "dev"
     format: "console" # json, console
-    output:
-      - "stderr"
-    errOutput:
-      - "stderr" # @@ 没起作用
   storage:
     mongodb:
       - name: "default"

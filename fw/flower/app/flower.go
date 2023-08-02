@@ -4,12 +4,10 @@ import (
 	"path/filepath"
 
 	"github.com/sung1011/bloom/fw"
-	"github.com/sung1011/bloom/fw/svc"
 )
 
 type Flower struct {
-	svc.App // implements
-	sd      fw.Seed
+	sd fw.Seed
 
 	pot        fw.Pot // 服务容器
 	baseFolder string // 基础路径

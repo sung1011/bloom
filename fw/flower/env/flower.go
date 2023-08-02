@@ -5,12 +5,10 @@ import (
 	"strings"
 
 	"github.com/sung1011/bloom/fw"
-	"github.com/sung1011/bloom/fw/svc"
 )
 
 type Flower struct {
-	svc.Env // implements
-	sd      fw.Seed
+	sd fw.Seed
 
 	maps map[string]string
 }

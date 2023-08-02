@@ -5,14 +5,12 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/sung1011/bloom/fw"
-	"github.com/sung1011/bloom/fw/svc"
 )
 
 type Flower struct {
-	svc.Redis // implements
-	sd        fw.Seed
-	cMap      map[string]*redis.Client
-	csMap     map[string][]*redis.Client
+	sd    fw.Seed
+	cMap  map[string]*redis.Client
+	csMap map[string][]*redis.Client
 }
 
 func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {

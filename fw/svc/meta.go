@@ -12,10 +12,8 @@ type Data struct {
 	Env string
 	App struct {
 		Log struct {
-			Level     string
-			Format    string
-			Output    []string
-			ErrOutput []string
+			Level  string
+			Format string
 		}
 		Storage struct {
 			Mongodb []struct {

@@ -6,6 +6,7 @@ import (
 )
 
 type Seed struct {
+	svcApp  svc.App
 	svcMeta svc.Meta
 	Driver  string
 }
@@ -15,6 +16,7 @@ func (sd *Seed) Name() fw.SvcKey {
 }
 
 func (sd *Seed) Boot(pot fw.Pot) error {
+	sd.svcApp = pot.Make(svc.Key_App).(svc.App)
 	sd.svcMeta = pot.Make(svc.Key_Meta).(svc.Meta)
 	return nil
 }

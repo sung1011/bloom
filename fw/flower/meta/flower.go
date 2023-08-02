@@ -11,9 +11,8 @@ import (
 )
 
 type Flower struct {
-	svc.Meta // implements
-	sd       fw.Seed
-	d        *svc.Data
+	sd fw.Seed
+	d  *svc.Data
 }
 
 func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {

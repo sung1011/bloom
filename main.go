@@ -46,15 +46,19 @@ func main() {
 	if err := pot.Sow(&log.Seed{}); err != nil {
 		panic(err)
 	}
+	defer pot.Make(svc.Key_Log).(svc.Log).Sync()
+
 	if err := pot.Sow(&redis.Seed{}); err != nil {
 		panic(err)
 	}
 
 	// @@ config, deploy, mw, mongo, server(kernel)
 	fmt.Println("-------------------------------------")
+
 	tmpMeta(pot)
-	// tmpZap(pot)
+	tmpZap(pot)
 	tmpRedis(pot)
+
 }
 
 func tmpRedis(pot fw.Pot) {
@@ -77,7 +81,12 @@ func tmpZap(pot fw.Pot) {
 	m := map[string]interface{}{
 		"a": "b",
 	}
-	pot.Make(svc.Key_Log).(svc.Log).Info(ctx, "lala", m)
+	logger := pot.Make(svc.Key_Log).(svc.Log)
+
+	logger.Info(ctx, "lala", m)
+	logger.Error(ctx, "eee", m)
+	// logger.Fatal(ctx, "fff", m)
+	// logger.Panic(ctx, "ppp", m)
 	// zap yaml
 	// 	rawJSON := []byte(`{
 	//     "level":"error",

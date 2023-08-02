@@ -2,33 +2,64 @@ package log
 
 import (
 	"context"
+	"io"
+	"os"
+	"path"
 
 	"github.com/sung1011/bloom/fw"
-	"github.com/sung1011/bloom/fw/svc"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type FlowerZap struct {
-	svc.Log    // implements
 	sd         fw.Seed
 	rootLogger *zap.SugaredLogger
 }
 
 func BudZap(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	sd := seed.(*Seed)
-	var err error
+	meta := sd.svcMeta.Get()
 	cfg := zap.NewDevelopmentConfig()
 
-	meta := sd.svcMeta.Get()
-	cfg.Development = meta.Env == "dev"
-	cfg.Encoding = meta.App.Log.Format
-	cfg.OutputPaths = meta.App.Log.Output
-	cfg.ErrorOutputPaths = meta.App.Log.ErrOutput
+	// cfg.Development = meta.Env == "dev"
+	// cfg.Encoding = meta.App.Log.Format
+	// cfg.OutputPaths = []string{"stdout"}
+	// cfg.OutputPaths = append(cfg.OutputPaths, path.Join(sd.svcApp.LogFolder(), "access.log"))
+	// cfg.ErrorOutputPaths = []string{"stdout"}
+	// cfg.ErrorOutputPaths = append(cfg.ErrorOutputPaths, path.Join(sd.svcApp.LogFolder(), "error.log"))
+	// logger, err := cfg.Build()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	logger, err := cfg.Build()
+	var err error
+	var encoder zapcore.Encoder
+	if meta.App.Log.Format == "json" {
+		encoder = zapcore.NewJSONEncoder(cfg.EncoderConfig)
+	} else {
+		encoder = zapcore.NewConsoleEncoder(cfg.EncoderConfig)
+	}
+	// access log
+	accessPath := path.Join(sd.svcApp.LogFolder(), "access.log")
+	c1 := zapcore.NewCore(encoder, zapcore.AddSync(getAccessLogWriter(accessPath)), zapcore.DebugLevel)
 	if err != nil {
 		return nil, err
 	}
+	// error log
+	errorPath := path.Join(sd.svcApp.LogFolder(), "error.log")
+	c2 := zapcore.NewCore(encoder, zapcore.AddSync(getErrorLogWriter(errorPath)), zapcore.ErrorLevel)
+	if err != nil {
+		return nil, err
+	}
+	// logger
+	core := zapcore.NewTee(c1, c2)
+	logger := zap.New(
+		core,
+		zap.AddCaller(),
+		zap.AddCallerSkip(1),
+		zap.AddStacktrace(zap.ErrorLevel),
+	)
+
 	return &FlowerZap{
 		sd:         seed.(*Seed),
 		rootLogger: logger.Sugar(),
@@ -89,14 +120,20 @@ func (flw *FlowerZap) Debug(ctx context.Context, msg string, fields map[string]i
 	flw.rootLogger.Debugw(msg, kvs...)
 }
 
-// Trace 表示最详细的信息，一般信息量比较大，可能包含调用堆栈等信息
-// func (flw *FlowerZap) Trace(ctx context.Context, msg string, fields map[string]interface{}) {
-// }
+func (flw *FlowerZap) Sync() error {
+	return flw.rootLogger.Sync()
+}
 
-// SetLevel 设置日志级别
-// // SetCtxFielder 从context中获取上下文字段field
-// SetCtxFielder(handler CtxFielder)
-// // SetFormatter 设置输出格式
-// SetFormatter(formatter Formatter)
-// // SetOutput 设置输出管道
-// SetOutput(out io.Writer)
+func getAccessLogWriter(logPath string) zapcore.WriteSyncer {
+	file, _ := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	// file, _ := os.Create(logPath)
+	ws := io.MultiWriter(file, os.Stdout)
+	return zapcore.AddSync(ws)
+}
+
+func getErrorLogWriter(logPath string) zapcore.WriteSyncer {
+	file, _ := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	// file, _ := os.Create(logPath)
+	ws := io.MultiWriter(file, os.Stderr)
+	return zapcore.AddSync(ws)
+}

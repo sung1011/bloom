@@ -4,12 +4,10 @@ import (
 	"net/http"
 
 	"github.com/sung1011/bloom/fw"
-	"github.com/sung1011/bloom/fw/svc"
 )
 
 // 引擎服务
 type FlowerGin struct {
-	svc.Server  // implements
 	httpHandler http.Handler
 }
 
