@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 
-	"github.com/sung1011/bloom/app/http"
+	appHttp "github.com/sung1011/bloom/app/http"
 	"github.com/sung1011/bloom/fw"
 	"github.com/sung1011/bloom/fw/flower/app"
 	"github.com/sung1011/bloom/fw/flower/env"
@@ -36,7 +37,7 @@ func main() {
 		panic(err)
 	}
 	// server
-	httpHandler, err := http.NewHttpEngine(pot)
+	httpHandler, err := appHttp.NewHttpEngine(pot)
 	if err != nil {
 		panic(err)
 	}
@@ -59,6 +60,13 @@ func main() {
 	test_Zap(pot)
 	test_Redis(pot)
 
+	test_Server(pot)
+	// _ = console.RunCommand(container)
+}
+
+func test_Server(pot fw.Pot) {
+	server := pot.Make(svc.Key_Server).(svc.Server)
+	http.ListenAndServe(":8080", server.HttpHandler())
 }
 
 func test_Redis(pot fw.Pot) {
@@ -84,7 +92,7 @@ func test_Zap(pot fw.Pot) {
 	logger := pot.Make(svc.Key_Log).(svc.Log)
 
 	logger.Info(ctx, "lala", m)
-	logger.Fatal(ctx, "fff", m)
+	// logger.Fatal(ctx, "fff", m)
 	// logger.Error(ctx, "eee", m)
 	// logger.Panic(ctx, "ppp", m)
 	// zap yaml
