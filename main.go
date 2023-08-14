@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/sung1011/bloom/app/cmd"
 	appHttp "github.com/sung1011/bloom/app/http"
 	"github.com/sung1011/bloom/fw"
 	"github.com/sung1011/bloom/fw/flower/app"
@@ -60,8 +61,9 @@ func main() {
 	test_Zap(pot)
 	test_Redis(pot)
 
-	test_Server(pot)
-	// _ = console.RunCommand(container)
+	// test_Server(pot)
+	_ = cmd.RunCommand(pot)
+
 }
 
 func test_Server(pot fw.Pot) {
