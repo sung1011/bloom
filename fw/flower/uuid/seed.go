@@ -13,11 +13,11 @@ func (sd *Seed) Name() fw.SvcKey {
 	return svc.Key_UUID
 }
 
-func (sd *Seed) Boot(pot fw.Pot) error {
+func (sd *Seed) Base(pot fw.Pot) error {
 	return nil
 }
 
-func (sd *Seed) Register(pot fw.Pot) fw.Bud {
+func (sd *Seed) Build(pot fw.Pot) fw.Bud {
 	switch sd.Driver {
 	case "google":
 		return BudGoole
@@ -25,10 +25,6 @@ func (sd *Seed) Register(pot fw.Pot) fw.Bud {
 		return BudGofrs
 	}
 	return nil
-}
-
-func (sd *Seed) Params(pot fw.Pot) []interface{} {
-	return []interface{}{}
 }
 
 func (sd *Seed) IsDefer() bool {

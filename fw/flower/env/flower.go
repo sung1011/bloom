@@ -13,7 +13,7 @@ type Flower struct {
 	maps map[string]string
 }
 
-func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func Bud(seed fw.Seed) (interface{}, error) {
 	maps := map[string]string{}
 	for _, e := range os.Environ() {
 		pair := strings.SplitN(e, "=", 2)

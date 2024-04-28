@@ -9,7 +9,7 @@ type FlowerGoogle struct {
 	sd fw.Seed
 }
 
-func BudGoole(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func BudGoole(seed fw.Seed) (interface{}, error) {
 	return &FlowerGoogle{
 		sd: seed.(*Seed),
 	}, nil

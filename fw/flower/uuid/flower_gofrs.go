@@ -9,7 +9,7 @@ type FlowerGofrs struct {
 	sd fw.Seed
 }
 
-func BudGofrs(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func BudGofrs(seed fw.Seed) (interface{}, error) {
 	return &FlowerGofrs{
 		sd: seed.(*Seed),
 	}, nil

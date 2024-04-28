@@ -7,25 +7,18 @@ import (
 
 type Seed struct {
 	BaseFolder string
-
-	svcUUID svc.UUID
 }
 
 func (sd *Seed) Name() fw.SvcKey {
 	return svc.Key_App
 }
 
-func (sd *Seed) Boot(pot fw.Pot) error {
-	sd.svcUUID = pot.Make(svc.Key_UUID).(svc.UUID)
+func (sd *Seed) Base(pot fw.Pot) error {
 	return nil
 }
 
-func (sd *Seed) Register(pot fw.Pot) fw.Bud {
+func (sd *Seed) Build(pot fw.Pot) fw.Bud {
 	return Bud
-}
-
-func (sd *Seed) Params(pot fw.Pot) []interface{} {
-	return []interface{}{pot}
 }
 
 func (sd *Seed) IsDefer() bool {

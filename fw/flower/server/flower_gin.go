@@ -12,7 +12,7 @@ type FlowerGin struct {
 }
 
 // 初始化web引擎服务实例
-func BudGin(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func BudGin(seed fw.Seed) (interface{}, error) {
 	sd := seed.(*Seed)
 	return &FlowerGin{httpHandler: sd.HttpHandler}, nil
 }

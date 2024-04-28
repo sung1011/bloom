@@ -23,7 +23,7 @@ func RunCommand(pot *fw.TicklesPot) error {
 		// 不需要出现cobra默认的completion子命令
 		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
 	}
-
+	AddAppCommand(rootCmd)
 	// 执行RootCommand
 	return rootCmd.Execute()
 }

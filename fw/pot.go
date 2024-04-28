@@ -10,15 +10,10 @@ import (
 type SvcKey string
 
 type Pot interface {
-	// Sow 绑定一个服务提供者，如果关键字凭证已经存在，会进行替换操作，返回error
-	// 无锁, 启动服务时候调用
+	// Sow 绑定一个服务提供者，如果关键字凭证已经存在，会进行替换操作，返回error; 无锁, 启动服务时候调用
 	Sow(Seed) error
-	// IsSow 关键字凭证是否已经绑定服务提供者
-	IsSow(SvcKey) bool
-	// Make 根据svcKey从seeds中获取一个服务, 单例模式的; 没有会报错
-	Make(SvcKey) interface{}
-	// New 根据svcKey从seeds中获取一个服务, 非单例模式的; 没有会报错
-	New(SvcKey, []interface{}) (interface{}, error)
+	// Bloom 根据svcKey从seeds中获取一个服务, 单例模式的; 没有会报错
+	Bloom(SvcKey) interface{}
 }
 
 type TicklesPot struct {
@@ -50,26 +45,20 @@ func (pot *TicklesPot) Sow(sd Seed) error {
 	return nil
 }
 
-func (pot *TicklesPot) IsSow(key SvcKey) bool {
+func (pot *TicklesPot) Bloom(key SvcKey) interface{} {
 	pot.lock.Lock()
 	defer pot.lock.Unlock()
-	return pot.getSeed(key) != nil
-}
+	// svc, err := pot.make(key)
+	sd := pot.getSeed(key)
+	if sd == nil {
+		panic(fmt.Sprintf("svc not found, svcKey: %s", key))
+	}
+	svc, err := pot.getFlower(sd)
 
-func (pot *TicklesPot) Make(key SvcKey) interface{} {
-	pot.lock.Lock()
-	defer pot.lock.Unlock()
-	serv, err := pot.make(key, false, nil)
 	if err != nil {
 		panic(err)
 	}
-	return serv
-}
-
-func (pot *TicklesPot) New(key SvcKey, params []interface{}) (interface{}, error) {
-	pot.lock.Lock()
-	defer pot.lock.Unlock()
-	return pot.make(key, true, params)
+	return svc
 }
 
 func (pot *TicklesPot) Pretty() {
@@ -112,7 +101,7 @@ func (pot *TicklesPot) getFlower(sd Seed) (interface{}, error) {
 	if flower, ok := pot.flowers[key]; ok {
 		return flower, nil
 	}
-	flower, err := pot.newFlower(sd, nil)
+	flower, err := pot.newFlower(sd)
 	if err != nil {
 		return nil, err
 	}
@@ -121,31 +110,17 @@ func (pot *TicklesPot) getFlower(sd Seed) (interface{}, error) {
 	return flower, nil
 }
 
-func (pot *TicklesPot) newFlower(sd Seed, params []interface{}) (interface{}, error) {
-	if err := sd.Boot(pot); err != nil {
+func (pot *TicklesPot) newFlower(sd Seed) (interface{}, error) {
+	if err := sd.Base(pot); err != nil {
 		return nil, err
 	}
-	if params == nil {
-		params = sd.Params(pot)
-	}
-	bud := sd.Register(pot)
+	bud := sd.Build(pot)
 	if bud == nil {
 		return nil, fmt.Errorf("seed not sow, svcKey: %s", sd.Name())
 	}
-	flower, err := bud(sd, params...)
+	flower, err := bud(sd)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 	return flower, err
-}
-
-func (pot *TicklesPot) make(key SvcKey, forceNew bool, params []interface{}) (interface{}, error) {
-	sd := pot.getSeed(key)
-	if sd == nil {
-		return nil, fmt.Errorf("seed not sow, svcKey: %s", key)
-	}
-	if forceNew {
-		return pot.newFlower(sd, params)
-	}
-	return pot.getFlower(sd)
 }

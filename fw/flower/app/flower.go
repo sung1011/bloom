@@ -3,25 +3,26 @@ package app
 import (
 	"path/filepath"
 
+	"github.com/google/uuid"
 	"github.com/sung1011/bloom/fw"
 )
 
 type Flower struct {
 	sd fw.Seed
 
-	pot        fw.Pot // 服务容器
+	// pot        fw.Pot // 服务容器
 	baseFolder string // 基础路径
 	appId      string // 表示当前这个app的唯一id, 可以用于分布式锁等
 }
 
-func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func Bud(seed fw.Seed) (interface{}, error) {
 	sd := seed.(*Seed)
-	pot := params[0].(fw.Pot)
+	// pot := params[0].(fw.Pot)
 
 	return &Flower{
-		pot:        pot,
+		// pot:        pot,
 		baseFolder: sd.BaseFolder,
-		appId:      sd.svcUUID.NewID(),
+		appId:      uuid.NewString(),
 		sd:         sd,
 	}, nil
 }

@@ -13,7 +13,7 @@ type Flower struct {
 	csMap map[string][]*redis.Client
 }
 
-func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func Bud(seed fw.Seed) (interface{}, error) {
 	sd := seed.(*Seed)
 	// c
 	cMap := map[string]*redis.Client{}

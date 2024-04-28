@@ -14,18 +14,14 @@ func (sd *Seed) Name() fw.SvcKey {
 	return svc.Key_Redis
 }
 
-func (sd *Seed) Boot(pot fw.Pot) error {
-	sd.svcMeta = pot.Make(svc.Key_Meta).(svc.Meta)
-	sd.svcLog = pot.Make(svc.Key_Log).(svc.Log)
+func (sd *Seed) Base(pot fw.Pot) error {
+	sd.svcMeta = pot.Bloom(svc.Key_Meta).(svc.Meta)
+	sd.svcLog = pot.Bloom(svc.Key_Log).(svc.Log)
 	return nil
 }
 
-func (sd *Seed) Register(pot fw.Pot) fw.Bud {
+func (sd *Seed) Build(pot fw.Pot) fw.Bud {
 	return Bud
-}
-
-func (sd *Seed) Params(pot fw.Pot) []interface{} {
-	return []interface{}{}
 }
 
 func (sd *Seed) IsDefer() bool {

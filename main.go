@@ -31,10 +31,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err := pot.Sow(&app.Seed{BaseFolder: dir}); err != nil { // app on: uuid
+	if err := pot.Sow(&app.Seed{BaseFolder: dir}); err != nil { // app depend on uuid
 		panic(err)
 	}
-	if err := pot.Sow(&meta.Seed{}); err != nil { // meta on: app, env
+	if err := pot.Sow(&meta.Seed{}); err != nil { // meta depend on app, env
 		panic(err)
 	}
 	// server
@@ -48,7 +48,7 @@ func main() {
 	if err := pot.Sow(&log.Seed{}); err != nil {
 		panic(err)
 	}
-	defer pot.Make(svc.Key_Log).(svc.Log).Sync()
+	defer pot.Bloom(svc.Key_Log).(svc.Log).Sync()
 
 	if err := pot.Sow(&redis.Seed{}); err != nil {
 		panic(err)
@@ -67,12 +67,12 @@ func main() {
 }
 
 func test_Server(pot fw.Pot) {
-	server := pot.Make(svc.Key_Server).(svc.Server)
+	server := pot.Bloom(svc.Key_Server).(svc.Server)
 	http.ListenAndServe(":8080", server.HttpHandler())
 }
 
 func test_Redis(pot fw.Pot) {
-	redis := pot.Make(svc.Key_Redis).(svc.Redis)
+	redis := pot.Bloom(svc.Key_Redis).(svc.Redis)
 	c, err := redis.GetClient("default")
 	if err != nil {
 		panic(err)
@@ -82,7 +82,7 @@ func test_Redis(pot fw.Pot) {
 }
 
 func test_Meta(pot fw.Pot) {
-	meta := pot.Make(svc.Key_Meta).(svc.Meta).Get()
+	meta := pot.Bloom(svc.Key_Meta).(svc.Meta).Get()
 	fmt.Println("env", meta.Env)
 }
 
@@ -91,7 +91,7 @@ func test_Zap(pot fw.Pot) {
 	m := map[string]interface{}{
 		"a": "b",
 	}
-	logger := pot.Make(svc.Key_Log).(svc.Log)
+	logger := pot.Bloom(svc.Key_Log).(svc.Log)
 
 	logger.Info(ctx, "lala", m)
 	// logger.Fatal(ctx, "fff", m)

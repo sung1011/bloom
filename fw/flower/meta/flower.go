@@ -15,7 +15,7 @@ type Flower struct {
 	d  *svc.Data
 }
 
-func Bud(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func Bud(seed fw.Seed) (interface{}, error) {
 	sd := seed.(*Seed)
 
 	confFile := path.Join(sd.svcApp.MetaFolder(), sd.svcEnv.AppEnv()+".yaml")

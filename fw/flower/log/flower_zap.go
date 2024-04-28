@@ -16,7 +16,7 @@ type FlowerZap struct {
 	rootLogger *zap.SugaredLogger
 }
 
-func BudZap(seed fw.Seed, params ...interface{}) (interface{}, error) {
+func BudZap(seed fw.Seed) (interface{}, error) {
 	sd := seed.(*Seed)
 	meta := sd.svcMeta.Get()
 	cfg := zap.NewDevelopmentConfig()
@@ -32,7 +32,6 @@ func BudZap(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	// 	return nil, err
 	// }
 
-	var err error
 	var encoder zapcore.Encoder
 	if meta.App.Log.Format == "json" {
 		encoder = zapcore.NewJSONEncoder(cfg.EncoderConfig)
@@ -42,15 +41,9 @@ func BudZap(seed fw.Seed, params ...interface{}) (interface{}, error) {
 	// access log
 	accessPath := path.Join(sd.svcApp.LogFolder(), "access.log")
 	c1 := zapcore.NewCore(encoder, zapcore.AddSync(getAccessLogWriter(accessPath)), zapcore.DebugLevel)
-	if err != nil {
-		return nil, err
-	}
 	// error log
 	errorPath := path.Join(sd.svcApp.LogFolder(), "error.log")
 	c2 := zapcore.NewCore(encoder, zapcore.AddSync(getErrorLogWriter(errorPath)), zapcore.ErrorLevel)
-	if err != nil {
-		return nil, err
-	}
 	// logger
 	core := zapcore.NewTee(c1, c2)
 	logger := zap.New(
